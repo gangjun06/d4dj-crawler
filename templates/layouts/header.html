@@ -1,0 +1,51 @@
+{{ define "layouts/header.html"}}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"
+      integrity="sha512-L03kznCrNOfVxOUovR6ESfCz9Gfny7gihUX/huVbQB9zjODtYpxaVtIaAkpetoiyV2eqWbvxMH9fiSv5enX7bw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Google Fonts -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
+    />
+
+    <!-- CSS Reset -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css"
+    />
+
+    <!-- Milligram CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.4.1/milligram.css"
+    />
+
+    <style>
+      .container {
+        padding-bottom: 7.5rem;
+        padding-top: 7.5rem;
+      }
+    </style>
+
+    <title>API.D4DJ.Info</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1><a class="title" href="/">API.D4DJ.Info</a></h1>
+      <p></p>
+      {{ end }}
+    </div>
+  </body>
+</html>
