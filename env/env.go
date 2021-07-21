@@ -8,9 +8,12 @@ import (
 )
 
 type EnvKey string
+type EnvToolPath string
 
 var (
-	KeyServerPort EnvKey = "SERVER_PORT"
+	KeyServerPort  EnvKey = "SERVER_PORT"
+	KeyEnvToolPath EnvKey = "TOOL_PATH"
+	KeyAssetPath   EnvKey = "ASSET_PATH"
 )
 
 func init() {

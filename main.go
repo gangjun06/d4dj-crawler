@@ -1,7 +1,10 @@
 package main
 
-import "github.com/gangjun06/d4dj-info-server/routes"
+import (
+	"github.com/gangjun06/d4dj-info-server/utils/crawler"
+)
 
 func main() {
-	routes.InitServer()
+	// routes.InitServer()
+	crawler.Start()
 }

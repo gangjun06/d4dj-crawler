@@ -76,8 +76,6 @@ namespace D4DJ_Tool
 					ProcessFileSystemEntry(new FileInfo(arg));
 				}
 			}
-
-			Console.WriteLine("Successful!");
 		}
 	}
 }

@@ -14,6 +14,7 @@ dotnet build --configuration Release
 2. create .env file
 ```
 SERVER_PORT=9096
+ASSET_PATH=./assets
 TOOL_PATH=/PATH/TO/D4DJ-Tool/EXECUTEABLE/FILE
 ```
 4. Run!
