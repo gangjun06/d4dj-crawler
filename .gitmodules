@@ -1,0 +1,3 @@
+[submodule "D4DJ-Tool"]
+	path = D4DJ-Tool
+	url = https://github.com/gangjun06/D4DJ-Tools
