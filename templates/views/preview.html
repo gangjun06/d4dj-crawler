@@ -1,0 +1,18 @@
+{{ define "views/preview.html" }} {{ template "layouts/header.html" .basicData }}
+<h2>File Preview</h2>
+<p><a href="javascript:history.go(-1)">/{{.dir}}</a>{{.name}} | <a href="{{.download}}" target="_blank">Downlaod</a></p>
+<pre><code> GET: https://api.d4dj.info{{.download}}
+</code></pre>
+{{ if eq .type ".json" }}
+<pre><code>
+	{{.data}}
+</code></pre>
+{{ else if eq .type ".png" }}
+<img src="{{.src}}">
+{{ else if eq .type ".jpg" }}
+<img src="{{.src}}">
+{{else}}
+<p>Unsupport type</p>
+{{end}}
+
+{{ template "layouts/footer.html" .basicData }} {{ end }}

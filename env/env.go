@@ -3,6 +3,7 @@ package env
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -14,6 +15,7 @@ var (
 	KeyServerPort  EnvKey = "SERVER_PORT"
 	KeyEnvToolPath EnvKey = "TOOL_PATH"
 	KeyAssetPath   EnvKey = "ASSET_PATH"
+	KeyCrawlerPool EnvKey = "CRAWLER_POOL"
 )
 
 func init() {
@@ -25,4 +27,12 @@ func init() {
 
 func Get(key EnvKey) string {
 	return os.Getenv(string(key))
+}
+
+func GetInt(key EnvKey) int {
+	num, err := strconv.Atoi(os.Getenv(string(key)))
+	if err != nil {
+		log.Fatal(err)
+	}
+	return num
 }

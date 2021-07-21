@@ -51,7 +51,7 @@ func Start() {
 		}
 	}
 
-	p, _ := ants.NewPool(30)
+	p, _ := ants.NewPool(env.GetInt(env.KeyCrawlerPool))
 	defer p.Release()
 	go func() {
 		for _, d := range list {
@@ -110,6 +110,8 @@ func do(file string, c chan<- *status) {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 		return
 	}
+	savePath = strings.ReplaceAll(savePath, "msgpack", "")
+	os.Remove(savePath)
 	c <- &status{IsSuccess: true, FileName: file, ErrorMessage: ""}
 }
 

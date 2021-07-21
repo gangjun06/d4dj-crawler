@@ -27,6 +27,7 @@ TOOL_PATH=/PATH/TO/D4DJ-Tool/EXECUTEABLE/FILE
 4. Run!
 
 ```
+go run main.go -crawl
 go run main.go
 ```
 

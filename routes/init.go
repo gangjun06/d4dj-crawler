@@ -11,6 +11,7 @@ func InitServer() {
 	r.LoadHTMLGlob("templates/**/*.html")
 
 	initViewRoutes(r.Group("/"))
+	initFileRoutes(r.Group("/api/file"))
 
 	port := env.Get(env.KeyServerPort)
 	r.Run(":" + port)

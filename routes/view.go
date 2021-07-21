@@ -7,4 +7,5 @@ import (
 
 func initViewRoutes(r *gin.RouterGroup) {
 	r.GET("/", c.IndexPage)
+	r.GET("/explore", c.ExplorePage)
 }
