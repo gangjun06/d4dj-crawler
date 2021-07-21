@@ -1,5 +1,4 @@
-﻿// Refference: https://github.com/GEEKiDoS/D4DJ-Tools/tree/master/AssetTool
-using MessagePack;
+﻿using MessagePack;
 using MessagePack.Resolvers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -8,8 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
+using D4DJ_Tools.Masters;
 
-namespace D4DJ_Tool
+namespace D4DJ_Tools
 {
 	class Program
 	{
@@ -21,12 +21,27 @@ namespace D4DJ_Tool
 
 		static void DecryptMaster(FileInfo inputFile, byte[] decrypted)
 		{
+			var typeName = inputFile.Name.Replace(".msgpack", "");
+			var targetType = MasterTypes.GetDeserializeType(typeName);
+
 			var options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
 
-			File.WriteAllText(
-			    inputFile.FullName.Replace(".msgpack", ".json"),
-			    MessagePackSerializer.ConvertToJson(decrypted, options)
-			);
+			if (targetType == null)
+			{
+				Console.WriteLine($"Not supported master {typeName}.");
+				File.WriteAllText(
+				    inputFile.FullName.Replace(".msgpack", ".json"),
+				    MessagePackSerializer.ConvertToJson(decrypted, options)
+				);
+			}
+			else
+			{
+				var result = MessagePackSerializer.Deserialize(targetType, decrypted, options);
+				File.WriteAllText(
+				    inputFile.FullName.Replace(".msgpack", ".json"),
+				    DumpToJson(result)
+				);
+			}
 		}
 
 
@@ -52,6 +67,30 @@ namespace D4DJ_Tool
 				{
 					DecryptMaster(fileInfo, fileData);
 				}
+				else if (fileInfo.Name.StartsWith("chart_"))
+				{
+					try
+					{
+						object result = null;
+
+						// Check if this is chart common data
+						if (fileInfo.Name.EndsWith("0"))
+							result = DeserializeMsgPack<ChartCommonData>(fileData);
+						else
+							result = DeserializeMsgPack<ChartData>(fileData);
+
+						var options = MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4Block);
+
+						File.WriteAllText(
+						    fileInfo.FullName + ".json",
+						    DumpToJson(result)
+						);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine($"Failed to dump chart: {ex.Message}");
+					}
+				}
 				else if (fileInfo.Name.EndsWith("ResourceList.msgpack"))
 				{
 					Console.WriteLine($"Dumping ResourceList...");
@@ -62,7 +101,6 @@ namespace D4DJ_Tool
 					    fileInfo.FullName.Replace(".msgpack", ".json"),
 					    DumpToJson(result)
 					);
-
 				}
 			}
 		}

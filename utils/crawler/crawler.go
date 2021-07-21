@@ -11,6 +11,7 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gangjun06/d4dj-info-server/env"
 	"github.com/gangjun06/d4dj-info-server/utils/crypto"
@@ -34,6 +35,7 @@ func Start() {
 	go do("iOSResourceList.msgpack", c)
 	if result := <-c; !result.IsSuccess {
 		// TODO: Save Error Log To database
+		fmt.Println(result)
 		return
 	}
 
@@ -44,7 +46,7 @@ func Start() {
 	}
 	list := []string{}
 	for k := range curList {
-		if _, ok := lastList[k]; !ok {
+		if _, ok := lastList[k]; !ok || strings.HasPrefix(k, "Master") {
 			list = append(list, k)
 		}
 	}
@@ -52,6 +54,7 @@ func Start() {
 	go func() {
 		for _, d := range list {
 			go do(d, c)
+			time.Sleep(time.Second)
 		}
 	}()
 
@@ -86,7 +89,7 @@ func do(file string, c chan<- *status) {
 		return
 	}
 	savePath := path.Join(env.Get(env.KeyAssetPath), strings.ReplaceAll(file, ".enc", ""))
-	if _, err := os.Stat(savePath); os.IsExist(err) {
+	if _, err := os.Stat(savePath); os.IsExist(err) && !strings.HasPrefix(file, "Master") {
 		c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is already exists"}
 		return
 	}
@@ -111,7 +114,7 @@ func downlaod(path string) ([]byte, error) {
 	if !strings.HasSuffix(path, "acb") {
 		downloadPath += ".enc"
 	}
-	resp, err := http.Get("https://resources.d4dj-groovy-mix.com/1161b98bd529f32da32e631f1504b928c4f3961f/" + path)
+	resp, err := http.Get("https://resources.d4dj-groovy-mix.com/1161b98bd529f32da32e631f1504b928c4f3961f/" + downloadPath)
 	if err != nil {
 		return []byte{}, err
 	}
