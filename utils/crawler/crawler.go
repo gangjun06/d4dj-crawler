@@ -11,10 +11,10 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/gangjun06/d4dj-info-server/env"
 	"github.com/gangjun06/d4dj-info-server/utils/crypto"
+	"github.com/panjf2000/ants/v2"
 )
 
 var errFileNotFound = fmt.Errorf("err file not found")
@@ -34,7 +34,7 @@ func Start() {
 	c := make(chan *status)
 	go do("iOSResourceList.msgpack", c)
 	if result := <-c; !result.IsSuccess {
-		// TODO: Save Error Log To database
+		// TODO: Save Erro Log To database
 		fmt.Println(result)
 		return
 	}
@@ -51,16 +51,20 @@ func Start() {
 		}
 	}
 
+	p, _ := ants.NewPool(30)
+	defer p.Release()
 	go func() {
 		for _, d := range list {
-			go do(d, c)
-			time.Sleep(time.Second)
+			p.Submit(func() { do(d, c) })
 		}
 	}()
 
+	listLen := len(list)
+	count := 1
 	for range list {
 		result := <-c
-		fmt.Println(result)
+		fmt.Println(count, "/", listLen, result)
+		count++
 	}
 }
 
