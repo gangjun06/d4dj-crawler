@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gangjun06/d4dj-info-server/env"
+	"github.com/gangjun06/d4dj-info-server/conf"
 )
 
 type Explorer struct {
@@ -27,7 +27,7 @@ type FileList struct {
 
 func NewExplorer(targetPath string) *Explorer {
 	targetPath = strings.ReplaceAll(targetPath, "..", "")
-	realPath := path.Join(env.Get(env.KeyAssetPath), targetPath)
+	realPath := path.Join(conf.Get().AssetPath, targetPath)
 	explorer := &Explorer{
 		Path:       realPath,
 		TargetPath: targetPath,

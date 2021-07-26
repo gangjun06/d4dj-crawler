@@ -34,5 +34,7 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/go,dotnetcore
 
 .env*
+config.toml
+config_docker.toml
 assets
 .vscode

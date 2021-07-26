@@ -5,24 +5,20 @@
 1. Clone repository
 
 ```bash
-git clone https://github.com/gangjun06/d4dj-info-server
+git clone https://github.com/gangjun06/d4dj-info-server --recursive
 cd d4dj-info-server
 ```
 
-3. build D4DJ-Tool
+3. Build D4DJ-Tool
 
 ```
 cd D4DJ-Tool
 dotnet build --configuration Release
 ```
 
-2. create .env file
-
-```
-SERVER_PORT=9096
-ASSET_PATH=./assets
-TOOL_PATH=/PATH/TO/D4DJ-Tool/EXECUTEABLE/FILE
-```
+2. Add config.toml
+- rename `conf.exam.toml` to `conf.toml`
+- edit config file
 
 4. Run!
 

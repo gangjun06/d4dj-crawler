@@ -1,0 +1,5 @@
+port=9096
+assetPath="./assets"
+toolPath="./D4DJ-Tool/bin/Release/net5.0/D4DJ-Tool"
+crawlerPool=10
+assetServerPath="https://example.com/"

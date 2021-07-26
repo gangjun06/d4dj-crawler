@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gangjun06/d4dj-info-server/env"
+	"github.com/gangjun06/d4dj-info-server/conf"
 	"github.com/gangjun06/d4dj-info-server/utils/crypto"
 	"github.com/panjf2000/ants/v2"
 )
@@ -51,7 +51,7 @@ func Start() {
 		}
 	}
 
-	p, _ := ants.NewPool(env.GetInt(env.KeyCrawlerPool))
+	p, _ := ants.NewPool(conf.Get().CrawlerPool)
 	defer p.Release()
 	go func() {
 		for _, d := range list {
@@ -69,7 +69,7 @@ func Start() {
 }
 
 func openListFile() (map[string]interface{}, error) {
-	listFilePath := path.Join(string(env.Get(env.KeyAssetPath)), "iOSResourceList.json")
+	listFilePath := path.Join(conf.Get().AssetPath, "iOSResourceList.json")
 	var lastFileList map[string]interface{}
 	file, err := ioutil.ReadFile(listFilePath)
 	if err != nil {
@@ -92,7 +92,7 @@ func do(file string, c chan<- *status) {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 		return
 	}
-	savePath := path.Join(env.Get(env.KeyAssetPath), strings.ReplaceAll(file, ".enc", ""))
+	savePath := path.Join(conf.Get().AssetPath, strings.ReplaceAll(file, ".enc", ""))
 	if _, err := os.Stat(savePath); os.IsExist(err) && !strings.HasPrefix(file, "Master") {
 		c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is already exists"}
 		return
@@ -120,7 +120,7 @@ func downlaod(path string) ([]byte, error) {
 	if !strings.HasSuffix(path, "acb") {
 		downloadPath += ".enc"
 	}
-	resp, err := http.Get("https://resources.d4dj-groovy-mix.com/1161b98bd529f32da32e631f1504b928c4f3961f/" + downloadPath)
+	resp, err := http.Get(conf.Get().AssetServerPath + downloadPath)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -133,6 +133,6 @@ func downlaod(path string) ([]byte, error) {
 }
 
 func msgpackToJSON(filePath string) error {
-	c := exec.Command(env.Get(env.KeyEnvToolPath), filePath)
+	c := exec.Command(conf.Get().ToolPath, filePath)
 	return c.Run()
 }
