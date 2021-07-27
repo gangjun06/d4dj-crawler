@@ -9,14 +9,15 @@ git clone https://github.com/gangjun06/d4dj-info-server --recursive
 cd d4dj-info-server
 ```
 
-3. Build D4DJ-Tool
+2. Build D4DJ-Tool
 
 ```
 cd D4DJ-Tool
 dotnet build --configuration Release -o ../D4DJ-Tool-bin
 ```
 
-2. Add config.toml
+3. Add config.toml
+
 - rename `conf.exam.toml` to `conf.toml`
 - edit config file
 
@@ -24,6 +25,18 @@ dotnet build --configuration Release -o ../D4DJ-Tool-bin
 
 ```
 go run main.go
+```
+
+### Run with docker
+you should build D4DJ-Tool before build dockerfile
+```bash
+docker build . -t d4dj-info-server
+docker run \
+	-v $(pwd)/config_docker.toml:/app/config.toml \
+	-v $(pwd)/assets:/app/assets \
+	-p 9096:9096 \
+	--name d4dj-info-server \
+	d4dj-info-server
 ```
 
 ## Credits
