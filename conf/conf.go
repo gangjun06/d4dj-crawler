@@ -13,6 +13,7 @@ type Conf struct {
 	ToolPath        string
 	CrawlerPool     int
 	AssetServerPath string
+	Debug           bool
 }
 
 var conf *Conf
@@ -23,10 +24,7 @@ func init() {
 		log.Fatal("Error loading config.toml file")
 	}
 	if _, err := toml.Decode(string(confFile), &conf); err != nil {
-		// handle error
-	}
-	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error decoding. " + err.Error())
 	}
 }
 

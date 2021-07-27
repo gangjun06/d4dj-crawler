@@ -17,12 +17,13 @@ type Explorer struct {
 	IsDir      bool
 	NotFound   bool
 }
+
 type FileList struct {
-	Name  string
-	Path  string
-	IsDir bool
-	Size  string
-	Ext   string
+	Name  string `json:"name"`
+	Path  string `json:"path"`
+	IsDir bool   `json:"isDir"`
+	Size  string `json:"size"`
+	Ext   string `json:"ext"`
 }
 
 func NewExplorer(targetPath string) *Explorer {

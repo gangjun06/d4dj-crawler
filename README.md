@@ -13,7 +13,7 @@ cd d4dj-info-server
 
 ```
 cd D4DJ-Tool
-dotnet build --configuration Release
+dotnet build --configuration Release -o ../D4DJ-Tool-bin
 ```
 
 2. Add config.toml
@@ -25,11 +25,6 @@ dotnet build --configuration Release
 ```
 go run main.go
 ```
-
-## How it works
-Crawling D4DJ Groovy-mix asset server every 1 hour.
-The Asset server has a file called iOSResourceList.msgpack. If this file is changed, the added files are downloaded.
-
 
 ## Credits
 

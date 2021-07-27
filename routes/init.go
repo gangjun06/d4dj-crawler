@@ -8,6 +8,11 @@ import (
 )
 
 func InitServer() {
+	gin.SetMode(gin.ReleaseMode)
+	if conf.Get().Debug {
+		gin.SetMode(gin.DebugMode)
+	}
+
 	r := gin.Default()
 
 	r.LoadHTMLGlob("templates/**/*.html")

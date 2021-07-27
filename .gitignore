@@ -38,3 +38,6 @@ config.toml
 config_docker.toml
 assets
 .vscode
+howWorks.md
+D4DJ-Tool-bin
+docker_run.sh

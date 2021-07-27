@@ -13,9 +13,10 @@ func main() {
 	flag.Parse()
 	if *crawl {
 		crawler.Start()
+		crawler.Start()
 		return
 	}
-	ticker := time.NewTicker(time.Hour * 2)
+	ticker := time.NewTicker(time.Minute * 15)
 	go func() {
 		crawler.Start()
 		for range ticker.C {
