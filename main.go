@@ -4,22 +4,22 @@ import (
 	"flag"
 	"time"
 
+	"github.com/gangjun06/d4dj-info-server/conf"
 	"github.com/gangjun06/d4dj-info-server/utils/crawler"
 )
 
 func main() {
-	crawl := flag.Bool("crawl", false, "")
+	mode := flag.String("mode", "parse", "Run Mode.\nparse -> decrypt, convert, extract unity asset\ncrawl -> crawl assets from server")
 	flag.Parse()
-	if *crawl {
+	if *mode == "parse" {
+
+	} else if *mode == "crawl" {
 		crawler.Start()
-		crawler.Start()
-		return
-	}
-	ticker := time.NewTicker(time.Minute * 15)
-	go func() {
-		crawler.Start()
-		for range ticker.C {
-			crawler.Start()
+		if conf.Get().CrawlerTimer > 0 {
+			ticker := time.NewTicker(time.Minute * 15)
+			for range ticker.C {
+				crawler.Start()
+			}
 		}
-	}()
+	}
 }

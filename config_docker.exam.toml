@@ -1,6 +1,0 @@
-debug=false
-port=9096
-assetPath="/app/assets"
-toolPath="/app/D4DJ-Tool-bin/D4DJ-Tool.dll"
-crawlerPool=20
-assetServerPath="https://example.com/"

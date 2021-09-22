@@ -8,12 +8,11 @@ import (
 )
 
 type Conf struct {
-	Port            int
 	AssetPath       string
 	ToolPath        string
 	CrawlerPool     int
+	CrawlerTimer    int
 	AssetServerPath string
-	Debug           bool
 }
 
 var conf *Conf
