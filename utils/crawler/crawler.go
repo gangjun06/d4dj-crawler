@@ -156,7 +156,7 @@ func do(file string, c chan<- *status) {
 			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: "Error save file: " + err.Error()}
 		}
 	}
-	if strings.HasSuffix(savePath, "msgpack") || strings.HasPrefix(savePath, "chart_") {
+	if strings.HasSuffix(savePath, "msgpack") || strings.HasPrefix(filepath.Base(savePath), "chart_") {
 		if err := msgpackToJSON(savePath); err != nil {
 			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 			return
