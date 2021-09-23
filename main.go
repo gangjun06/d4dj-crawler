@@ -4,8 +4,8 @@ import (
 	"flag"
 	"time"
 
-	"github.com/gangjun06/d4dj-info-server/conf"
-	"github.com/gangjun06/d4dj-info-server/utils/crawler"
+	"github.com/gangjun06/d4dj-crawler/conf"
+	"github.com/gangjun06/d4dj-crawler/utils/crawler"
 )
 
 func main() {

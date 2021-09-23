@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gangjun06/d4dj-info-server/conf"
-	"github.com/gangjun06/d4dj-info-server/utils/crypto"
+	"github.com/gangjun06/d4dj-crawler/conf"
+	"github.com/gangjun06/d4dj-crawler/utils/crypto"
 	"github.com/panjf2000/ants/v2"
 )
 

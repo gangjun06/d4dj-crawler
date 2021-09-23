@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gangjun06/d4dj-info-server/utils/crypto"
+	"github.com/gangjun06/d4dj-crawler/utils/crypto"
 )
 
 func TestDecrypt(t *testing.T) {

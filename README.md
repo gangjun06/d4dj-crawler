@@ -1,25 +1,27 @@
-# D4DJ-INFO-SERVER
+# d4dj-crawler
 
 ## Getting Started
 
 1. Clone repository
 
 ```bash
-git clone https://github.com/gangjun06/d4dj-info-server --recursive
-cd d4dj-info-server
+git clone https://github.com/gangjun06/d4dj-crawler --recursive
+cd d4dj-crawler
 ```
 
-2. Build D4DJ-Tool
+2. Build Tools
 
 ```
 cd D4DJ-Tool
 dotnet build --configuration Release -o ../D4DJ-Tool-bin
+cd ../D4DJ-assets-extractor/UnityLive2DExtractor
+dotnet build --configuration Release -o ../../D4DJ-assets-extractor-bin
 ```
 
 3. Add config.toml
 
-- rename `conf.exam.toml` to `conf.toml`
-- edit config file
+- Rename `config.exam.toml` to `config.toml`
+- Edit config file
 
 4. Run!
 
