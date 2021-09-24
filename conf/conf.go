@@ -13,6 +13,7 @@ type Conf struct {
 	CrawlerPool     int
 	CrawlerTimer    int
 	AssetServerPath string
+	ExtractorPath   string
 }
 
 var conf *Conf

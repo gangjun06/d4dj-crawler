@@ -6,15 +6,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"os/exec"
 	"path"
-	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/gangjun06/d4dj-crawler/conf"
-	"github.com/gangjun06/d4dj-crawler/utils/crypto"
+	"github.com/gangjun06/d4dj-crawler/parser"
+	"github.com/gangjun06/d4dj-crawler/parser/crypto"
 	"github.com/panjf2000/ants/v2"
 )
 
@@ -133,37 +131,16 @@ func do(file string, c chan<- *status) {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 		return
 	}
+
 	decrypt, err := crypto.New().Decrypt(data)
 	if err != nil {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 		return
 	}
-	savePath := path.Join(conf.Get().AssetPath, file)
 
-	// skip save if file exists
-	// if _, err := os.Stat(savePath); os.IsExist(err) && !strings.HasPrefix(file, "Master") {
-	// 	c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is already exists"}
-	// 	return
-	// }
-
-	// If forder not exists, create folder and save file
-	if err := ioutil.WriteFile(savePath, decrypt, 0644); err != nil {
-		dir, _ := filepath.Split(savePath)
-		if err := os.MkdirAll(dir, 0766); err != nil {
-			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: "Error create directory: " + err.Error()}
-		}
-		if err := ioutil.WriteFile(savePath, decrypt, 0644); err != nil {
-			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: "Error save file: " + err.Error()}
-		}
-	}
-	if strings.HasSuffix(savePath, "msgpack") || strings.HasPrefix(filepath.Base(savePath), "chart_") {
-		if err := msgpackToJSON(savePath); err != nil {
-			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
-			return
-		}
-		if err := os.Remove(savePath); err != nil {
-			fmt.Println(err)
-		}
+	if err := parser.Parse(file, decrypt); err != nil {
+		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
+		return
 	}
 
 	c <- &status{IsSuccess: true, FileName: file, ErrorMessage: ""}
@@ -180,11 +157,4 @@ func downlaod(path string) ([]byte, error) {
 	}
 
 	return ioutil.ReadAll(resp.Body)
-}
-
-func msgpackToJSON(filePath string) error {
-	c := exec.Command("dotnet", conf.Get().ToolPath, filePath)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c.Run()
 }

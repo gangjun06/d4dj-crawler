@@ -1,5 +1,7 @@
-D4DJ-Tool/
 assets/
 .git
 .vscode
 *.md
+D4DJ-assets-extractor-bin
+D4DJ-Tool-bin
+images

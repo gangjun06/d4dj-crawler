@@ -1,5 +1,6 @@
 assetPath="./assets"
 toolPath="./D4DJ-Tool-bin/D4DJ-Tool.dll"
+extractorPath="./D4DJ-assets-extractor-bin/D4DJAssetExtractor.dll"
 crawlerPool=10
 crawlerTimer=15
 assetServerPath='https://example.com/'
