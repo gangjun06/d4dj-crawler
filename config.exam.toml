@@ -4,3 +4,10 @@ extractorPath="./D4DJ-assets-extractor-bin/D4DJAssetExtractor.dll"
 crawlerPool=10
 crawlerTimer=15
 assetServerPath='https://example.com/'
+
+#If upload to aws
+[aws]
+accessKey=""
+secretKey=""
+bucketName=""
+region=""

@@ -10,9 +10,8 @@ import (
 	"path"
 	"strings"
 	"sync"
-	"time"
 
-	"github.com/gangjun06/d4dj-crawler/conf"
+	"github.com/gangjun06/d4dj-crawler/awsutil"
 	"github.com/gangjun06/d4dj-crawler/crawler"
 	"github.com/gangjun06/d4dj-crawler/parser"
 	"github.com/gangjun06/d4dj-crawler/parser/crypto"
@@ -23,13 +22,8 @@ func main() {
 	flag.Parse()
 
 	if *crawl {
+		awsutil.InitAWS()
 		crawler.Start()
-		if conf.Get().CrawlerTimer > 0 {
-			ticker := time.NewTicker(time.Minute * 15)
-			for range ticker.C {
-				crawler.Start()
-			}
-		}
 	} else {
 		args := flag.Args()
 		if len(args) < 1 {

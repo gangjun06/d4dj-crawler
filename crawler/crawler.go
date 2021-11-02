@@ -10,7 +10,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gangjun06/d4dj-crawler/awsutil"
 	"github.com/gangjun06/d4dj-crawler/conf"
+	"github.com/gangjun06/d4dj-crawler/log"
 	"github.com/gangjun06/d4dj-crawler/parser"
 	"github.com/gangjun06/d4dj-crawler/parser/crypto"
 	"github.com/panjf2000/ants/v2"
@@ -22,12 +24,6 @@ type status struct {
 	IsSuccess    bool
 	FileName     string
 	ErrorMessage string
-}
-
-var ModifiedDate map[string]time.Time
-
-func init() {
-	ModifiedDate = make(map[string]time.Time)
 }
 
 func Start() {
@@ -76,7 +72,17 @@ func Start() {
 	count := 1
 	for range list {
 		result := <-c
-		fmt.Println(count, "/", listLen, result)
+		// log.Println()
+
+		str := fmt.Sprintf("%d / %d %s", count, listLen, result.FileName)
+		if result.IsSuccess {
+			if result.ErrorMessage != "" {
+				log.Log.WithField("infoMsg", result.ErrorMessage).Info(str)
+			}
+			log.Log.Info(str)
+		} else {
+			log.Log.WithField("errorName", result.ErrorMessage).Warn(str)
+		}
 		count++
 	}
 }
@@ -97,21 +103,31 @@ func isModified(path string) (bool, error) {
 	if resp.StatusCode != 200 {
 		return false, errors.New("error request")
 	}
+	lastModified, err := awsutil.ModifiedDate(path)
+	if err != nil || lastModified == nil {
+		return true, nil
+	}
 	parsedTime, _ := time.Parse(time.RFC1123, resp.Header.Get("Last-Modified"))
-	lastModified, ok := ModifiedDate[path]
-	if !ok || lastModified.Before(parsedTime) {
-		ModifiedDate[path] = parsedTime
+	// lastModified, ok := ModifiedDate[path]
+	if lastModified.Before(parsedTime) {
 		return true, nil
 	}
 	return false, nil
 }
 
 func openListFile() (map[string]interface{}, error) {
-	listFilePath := path.Join(conf.Get().AssetPath, "iOSResourceList.json")
+	var file []byte
+	var err error
+	awsData, err := awsutil.GetFile("iOSResourceList.json")
 	var lastFileList map[string]interface{}
-	file, err := ioutil.ReadFile(listFilePath)
-	if err != nil {
-		return map[string]interface{}{}, errFileNotFound
+	if err == nil && awsData != nil {
+		file = *awsData
+	} else {
+		listFilePath := path.Join(conf.Get().AssetPath, "iOSResourceList.json")
+		file, err = ioutil.ReadFile(listFilePath)
+		if err != nil {
+			return map[string]interface{}{}, errFileNotFound
+		}
 	}
 	if err := json.Unmarshal(file, &lastFileList); err != nil {
 		return map[string]interface{}{}, err

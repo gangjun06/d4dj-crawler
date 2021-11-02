@@ -11,9 +11,14 @@ type Conf struct {
 	AssetPath       string
 	ToolPath        string
 	CrawlerPool     int
-	CrawlerTimer    int
 	AssetServerPath string
 	ExtractorPath   string
+	Aws             struct {
+		BucketName string
+		Region     string
+		AccessKey  string
+		SecretKey  string
+	}
 }
 
 var conf *Conf
