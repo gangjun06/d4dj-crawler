@@ -47,7 +47,7 @@ func main() {
 				wg.Add(1)
 				go func(f fs.FileInfo) {
 					if err := Parse(path.Join(args[0], f.Name())); err != nil {
-						fmt.Println("Error ", info.Name(), ":", err.Error())
+						fmt.Println("Error", info.Name(), "/", err.Error())
 					}
 					wg.Done()
 				}(f)
@@ -55,7 +55,7 @@ func main() {
 			wg.Wait()
 		} else {
 			if err := Parse(args[0]); err != nil {
-				fmt.Println("Error ", info.Name(), " : ", err.Error())
+				fmt.Println("Error", info.Name(), "/", err.Error())
 				return
 			}
 		}
@@ -74,8 +74,9 @@ func Parse(filePath string) error {
 			return fmt.Errorf("error while decrypt")
 		}
 		data = decrypt
+		filePath = strings.Replace(filePath, ".enc", "", 1)
 	}
-	if err := parser.Parse(filePath, data); err != nil {
+	if err := parser.Parse(path.Base(filePath), data, path.Dir(filePath)); err != nil {
 		return err
 	}
 	fmt.Println("Success ", filePath)

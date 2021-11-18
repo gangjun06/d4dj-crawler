@@ -137,10 +137,12 @@ func openListFile() (map[string]interface{}, error) {
 
 func do(file string, c chan<- *status) {
 	if strings.HasPrefix(file, "Master") {
-		if modified, _ := isModified(file); !modified {
-			c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
-			return
-		}
+		c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
+		return
+		// if modified, _ := isModified(file); !modified {
+		// 	c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
+		// 	return
+		// }
 	}
 	data, err := downlaod(file)
 	if err != nil {
@@ -148,13 +150,15 @@ func do(file string, c chan<- *status) {
 		return
 	}
 
-	decrypt, err := crypto.New().Decrypt(data)
-	if err != nil {
-		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
-		return
+	if !strings.HasSuffix(file, "acb") {
+		data, err = crypto.New().Decrypt(data)
+		if err != nil {
+			c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
+			return
+		}
 	}
 
-	if err := parser.Parse(file, decrypt); err != nil {
+	if err := parser.Parse(file, data); err != nil {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
 		return
 	}

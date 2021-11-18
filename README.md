@@ -1,4 +1,5 @@
 # d4dj-crawler
+> It only works on Windows due to multiple dependencies. 
 
 ## Getting Started
 
@@ -9,52 +10,42 @@ git clone https://github.com/gangjun06/d4dj-crawler --recursive
 cd d4dj-crawler
 ```
 
-2. Build Tools
+2. Download VgmStream
 
-```
+Goto [vgmstream](https://vgmstream.org/downloads) and download
+
+Unzip program and locate to [project-path]/vgmstream
+
+3. Build Tools
+
+```bash
 cd D4DJ-Tool
 dotnet build --configuration Release -o ../D4DJ-Tool-bin
 cd ../D4DJ-assets-extractor/UnityLive2DExtractor
 dotnet build --configuration Release -o ../../D4DJ-assets-extractor-bin
 ```
 
-3. Add config.toml
+4. Add config.toml
 
 - Rename `config.exam.toml` to `config.toml`
 - Edit config file
 
-4. Run!
-
-```
-go run main.go
-```
-
-### Run with docker
-
-You should build D4DJ-Tool before build dockerfile
-
-1. Build or Pull
-
+5. Build
 ```bash
-docker build . -t d4dj-crawler
+go build
 ```
 
-OR
-
+6. Crawl Resource
+> You must input assetServerPath to `config.toml`. To get the asset url, you need to analyze the game packet.
 ```bash
-docker pull gangjun06/d4dj-crawler
+d4dj-crawler.exe -crawl
 ```
 
-2. Run
-
+6-1. Parse Resource
 ```bash
-
-docker run \
-	-v $(pwd)/config.toml:/app/config.toml \
-	-v $(pwd)/assets:/app/assets \
-	--name d4dj-crawler \
-	{d4dj-crawler} OR {gangjun06/d4dj-crawler}
+d4dj-crawler.exe [filename]
 ```
+or just drag and drop your file to .exe
 
 ## Credits
 

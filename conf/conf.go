@@ -13,6 +13,7 @@ type Conf struct {
 	CrawlerPool     int
 	AssetServerPath string
 	ExtractorPath   string
+	VgmStreamPath   string
 	Aws             struct {
 		BucketName string
 		Region     string
