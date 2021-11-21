@@ -81,7 +81,7 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 		return nil
 	}
 
-	targetFile := fileName
+	targetFile := savePath
 	switch {
 	case strings.Contains(fileName, "msgpack"):
 		targetFile = strings.Replace(savePath, "msgpack", "json", 1)

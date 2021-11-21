@@ -136,14 +136,12 @@ func openListFile() (map[string]interface{}, error) {
 }
 
 func do(file string, c chan<- *status) {
-	if strings.HasPrefix(file, "Master") {
-		c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
-		return
-		// if modified, _ := isModified(file); !modified {
-		// 	c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
-		// 	return
-		// }
-	}
+	// if strings.HasPrefix(file, "Master") {
+	// 	if modified, _ := isModified(file); !modified {
+	// 		c <- &status{IsSuccess: true, FileName: file, ErrorMessage: "file is not modified"}
+	// 		return
+	// 	}
+	// }
 	data, err := downlaod(file)
 	if err != nil {
 		c <- &status{IsSuccess: false, FileName: file, ErrorMessage: err.Error()}
