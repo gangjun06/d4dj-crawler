@@ -75,7 +75,7 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 					return err
 				}
 				key += name
-				awsutil.PutFile(key+name, bytes.NewReader(file))
+				awsutil.PutFile(key, bytes.NewReader(file))
 				return nil
 			})
 		return nil
