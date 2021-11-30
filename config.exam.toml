@@ -4,6 +4,7 @@ extractorPath="./D4DJ-assets-extractor-bin/D4DJAssetExtractor.dll"
 crawlerPool=15
 assetServerPath='https://example.com'
 vgmStreamPath="./vgmstream/test.exe"
+ffmpegPath="./ffmpeg.exe"
 
 #If upload to aws
 [aws]

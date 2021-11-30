@@ -2,6 +2,7 @@ package awsutil
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -35,6 +36,12 @@ func InitAWS() {
 	Client = s3.NewFromConfig(cfg)
 
 	bucket = aws.String(awsConf.BucketName)
+
+	data, err := GetFile("url.txt")
+	if err == nil {
+		conf.SetUrl(string(*data))
+		fmt.Println(conf.Get().AssetServerPath)
+	}
 
 }
 

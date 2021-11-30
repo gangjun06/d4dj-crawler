@@ -41,6 +41,12 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 		err = RunExtractor(savePath)
 	} else if strings.HasSuffix(fileName, "acb") {
 		err = RunVgmStream(savePath)
+		if err == nil {
+			err = RunFFMPeg(savePath)
+			if err := os.Remove(strings.Replace(savePath, "acb", "wav", -1)); err != nil {
+				fmt.Println(err)
+			}
+		}
 	} else {
 		usedExternalTool = false
 	}
@@ -89,8 +95,8 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 	case strings.Contains(fileName, "chart"):
 		targetFile = savePath + ".json"
 	case strings.Contains(fileName, "acb"):
-		targetFile = strings.Replace(savePath, "acb", "wav", 1)
-		key = strings.Replace(fileName, "acb", "wav", 1)
+		targetFile = strings.Replace(savePath, "acb", "mp3", 1)
+		key = strings.Replace(fileName, "acb", "mp3", 1)
 	case strings.Contains(fileName, "card_chara_transparent_"):
 		targetFile = strings.Replace(strings.Replace(savePath, "iOS", "images", 1), "ondemand_", "", 1) + ".png"
 		key = strings.Replace(strings.Replace(fileName, "iOS", "images", 1), "ondemand_", "", 1) + ".png"
@@ -125,6 +131,13 @@ func RunExtractor(filePath string) error {
 // RunVGMStream convert .acb file to .wav
 func RunVgmStream(filePath string) error {
 	c := exec.Command(conf.Get().VgmStreamPath, "-o", strings.Replace(filePath, "acb", "wav", 1), filePath)
+	c.Stderr = os.Stderr
+	return c.Run()
+}
+
+// RunFFMPeg convert .wav file to .mp3
+func RunFFMPeg(filePath string) error {
+	c := exec.Command(conf.Get().FfmpegPath, "-y", "-i", strings.Replace(filePath, "acb", "wav", 1), "-codec:a", "libmp3lame", "-qscale:a", "2", strings.Replace(filePath, "acb", "mp3", 1))
 	c.Stderr = os.Stderr
 	return c.Run()
 }

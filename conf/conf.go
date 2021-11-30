@@ -14,6 +14,7 @@ type Conf struct {
 	AssetServerPath string
 	ExtractorPath   string
 	VgmStreamPath   string
+	FfmpegPath      string
 	Aws             struct {
 		BucketName string
 		Region     string
@@ -36,4 +37,8 @@ func init() {
 
 func Get() *Conf {
 	return conf
+}
+
+func SetUrl(str string) {
+	conf.AssetServerPath = str
 }

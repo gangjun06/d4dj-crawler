@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+
 	crawl := flag.Bool("crawl", false, "crawl assets from server")
 	flag.Parse()
 
