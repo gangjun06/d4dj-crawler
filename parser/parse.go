@@ -2,12 +2,14 @@ package parser
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gangjun06/d4dj-crawler/awsutil"
@@ -40,12 +42,40 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 	} else if strings.Contains(fileName, "ondemand_card_chara_transparent") || strings.Contains(fileName, "ondemand_live2d_") {
 		err = RunExtractor(savePath)
 	} else if strings.HasSuffix(fileName, "acb") {
-		err = RunVgmStream(savePath)
-		if err == nil {
-			err = RunFFMPeg(savePath)
-			if err := os.Remove(strings.Replace(savePath, "acb", "wav", -1)); err != nil {
-				fmt.Println(err)
+		if total, err := RunVgmStream(savePath); err == nil {
+			RunFFMPeg(total, savePath)
+			trimed := strings.TrimSuffix(savePath, ".acb")
+			files, err := filepath.Glob(trimed + "*" + ".wav")
+			if err == nil {
+				for _, f := range files {
+					if err := os.Remove(f); err != nil {
+						fmt.Println(err)
+					}
+				}
 			}
+			if conf.Get().Aws.BucketName != "" && total > 1 {
+				if err := os.Remove(savePath); err != nil {
+					fmt.Println(err)
+				}
+				dir := strings.ReplaceAll(filepath.Dir(key), "\\", "/")
+				files, err := filepath.Glob(trimed + "*" + ".mp3")
+				if err == nil {
+					for _, f := range files {
+						data, err = ioutil.ReadFile(f)
+						if err != nil {
+							return err
+						}
+						base := filepath.Base(f)
+						if err := awsutil.PutFile(dir+"/"+base, bytes.NewReader(data)); err != nil {
+							return err
+						}
+					}
+				}
+				return nil
+			}
+
+		} else {
+			fmt.Println(err)
 		}
 	} else {
 		usedExternalTool = false
@@ -60,7 +90,7 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 		}
 	}
 
-	if strings.Contains(fileName, "ondemand_live2d_") {
+	if conf.Get().Aws.BucketName != "" && strings.Contains(fileName, "ondemand_live2d_") {
 		targetDirectory := strings.Replace(strings.Replace(savePath, "iOS", "Live2D", 1), "ondemand_", "", 1)
 		filepath.Walk(targetDirectory,
 			func(path string, info os.FileInfo, err error) error {
@@ -104,13 +134,16 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 		return nil
 	}
 
-	data, err = ioutil.ReadFile(targetFile)
-	if err != nil {
-		return err
+	if conf.Get().Aws.BucketName != "" {
+		data, err = ioutil.ReadFile(targetFile)
+		if err != nil {
+			return err
+		}
+		if err := awsutil.PutFile(key, bytes.NewReader(data)); err != nil {
+			return err
+		}
 	}
-	if err := awsutil.PutFile(key, bytes.NewReader(data)); err != nil {
-		return err
-	}
+
 	return nil
 }
 
@@ -129,15 +162,61 @@ func RunExtractor(filePath string) error {
 }
 
 // RunVGMStream convert .acb file to .wav
-func RunVgmStream(filePath string) error {
-	c := exec.Command(conf.Get().VgmStreamPath, "-o", strings.Replace(filePath, "acb", "wav", 1), filePath)
+func RunVgmStream(filePath string) (int, error) {
+	bytes, err := exec.Command(conf.Get().VgmStreamPath, "-I", filePath).Output()
+	if err != nil {
+		return -1, err
+	}
+
+	saveName := strings.TrimRight(filePath, ".acb")
+
+	var data map[string]interface{}
+	json.Unmarshal(bytes, &data)
+
+	var total = 1
+
+	streamInfo, ok := data["streamInfo"].(map[string]interface{})
+	if ok {
+		totalTemp, ok := streamInfo["total"].(float64)
+		if ok {
+			total = int(totalTemp)
+		}
+	}
+
+	var cmd []string
+
+	ext := ".wav"
+
+	if total > 1 {
+		cmd = []string{filePath, "-i", "-F", "-S", "0", "-o", saveName + "-?s" + ext}
+	} else {
+		cmd = []string{filePath, "-o", saveName + ext}
+
+	}
+
+	c := exec.Command(conf.Get().VgmStreamPath, cmd...)
+
 	c.Stderr = os.Stderr
-	return c.Run()
+	return total, c.Run()
 }
 
 // RunFFMPeg convert .wav file to .mp3
-func RunFFMPeg(filePath string) error {
-	c := exec.Command(conf.Get().FfmpegPath, "-y", "-i", strings.Replace(filePath, "acb", "wav", 1), "-codec:a", "libmp3lame", "-qscale:a", "2", strings.Replace(filePath, "acb", "mp3", 1))
+func RunFFMPeg(total int, filePath string) error {
+	if total > 1 {
+		fileName := strings.TrimRight(filePath, ".acb")
+		for i := 0; i < total; i++ {
+			base := fileName + "-" + strconv.Itoa(i+1)
+			originName := base + ".wav"
+			saveName := base + ".mp3"
+
+			c := exec.Command(conf.Get().FfmpegPath, "-y", "-i", originName, "-codec:a", "libmp3lame", saveName)
+			c.Run()
+		}
+		return nil
+	}
+
+	c := exec.Command(conf.Get().FfmpegPath, "-y", "-i", strings.Replace(filePath, "acb", "wav", 1), "-codec:a", "libmp3lame", strings.Replace(filePath, "acb", "mp3", 1))
+
 	c.Stderr = os.Stderr
 	return c.Run()
 }
