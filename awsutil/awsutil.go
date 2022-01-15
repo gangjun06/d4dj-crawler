@@ -6,12 +6,11 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"os"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/gangjun06/d4dj-crawler/conf"
 )
 
@@ -25,16 +24,30 @@ func InitAWS() {
 	if awsConf.BucketName == "" {
 		return
 	}
-	os.Setenv("AWS_ACCESS_KEY_ID", awsConf.AccessKey)
-	os.Setenv("AWS_SECRET_ACCESS_KEY", awsConf.SecretKey)
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(awsConf.Region))
-	if err != nil {
-		log.Fatal(err)
+	// os.Setenv("AWS_ACCESS_KEY_ID", awsConf.AccessKey)
+	// os.Setenv("AWS_SECRET_ACCESS_KEY", awsConf.SecretKey)
+
+	cfg := aws.Config{
+		Region:      awsConf.Region,
+		Credentials: credentials.NewStaticCredentialsProvider(awsConf.AccessKey, awsConf.SecretKey, ""),
 	}
 
-	// Create an Amazon S3 service client
-	Client = s3.NewFromConfig(cfg)
+	if awsConf.EndPoint != "" {
+		customResolver := aws.EndpointResolverFunc(func(service, region string) (aws.Endpoint, error) {
+			if service == s3.ServiceID && region == awsConf.Region {
+				return aws.Endpoint{
+					PartitionID:   "aws",
+					URL:           awsConf.EndPoint,
+					SigningRegion: awsConf.Region,
+				}, nil
+			}
+			// returning EndpointNotFoundError will allow the service to fallback to it's default resolution
+			return aws.Endpoint{}, &aws.EndpointNotFoundError{}
+		})
+		cfg.EndpointResolver = customResolver
+	}
 
+	Client = s3.NewFromConfig(cfg)
 	bucket = aws.String(awsConf.BucketName)
 
 	data, err := GetFile("url.txt")

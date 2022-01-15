@@ -20,6 +20,7 @@ type Conf struct {
 		Region     string
 		AccessKey  string
 		SecretKey  string
+		EndPoint   string
 	}
 }
 
