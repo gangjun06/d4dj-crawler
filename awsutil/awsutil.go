@@ -64,7 +64,7 @@ func ModifiedDate(key string) (*time.Time, error) {
 	}
 	data, err := Client.HeadObject(context.TODO(), &s3.HeadObjectInput{
 		Bucket: bucket,
-		Key:    aws.String(key),
+		Key:    aws.String(conf.Get().Aws.BaseDir + key),
 	})
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func PutFile(key string, data io.Reader) error {
 
 	_, err := Client.PutObject(context.TODO(), &s3.PutObjectInput{
 		Bucket: bucket,
-		Key:    aws.String(key),
+		Key:    aws.String(conf.Get().Aws.BaseDir + key),
 		Body:   data,
 	})
 	if err != nil {
@@ -96,7 +96,7 @@ func GetFile(key string) (*[]byte, error) {
 
 	data, err := Client.GetObject(context.TODO(), &s3.GetObjectInput{
 		Bucket: bucket,
-		Key:    aws.String(key),
+		Key:    aws.String(conf.Get().Aws.BaseDir + key),
 	})
 
 	if err != nil {

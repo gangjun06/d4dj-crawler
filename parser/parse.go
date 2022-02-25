@@ -59,7 +59,6 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 				upload := saveHead + "/" + d + ".mp3"
 				key := head + "/" + d + ".mp3"
 
-				fmt.Println(upload)
 				if err := RunFFMPeg(wav); err != nil {
 					fmt.Println(err)
 					continue
@@ -202,6 +201,6 @@ func RunVgmStream(filePath string) ([]string, error) {
 func RunFFMPeg(filePath string) error {
 	c := exec.Command(conf.Get().FfmpegPath, "-y", "-i", filePath, "-codec:a", "libmp3lame", strings.Replace(filePath, "wav", "mp3", 1))
 
-	c.Stderr = os.Stderr
+	// c.Stderr = os.Stderr
 	return c.Run()
 }

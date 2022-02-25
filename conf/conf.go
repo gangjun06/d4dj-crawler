@@ -21,6 +21,7 @@ type Conf struct {
 		AccessKey  string
 		SecretKey  string
 		EndPoint   string
+		BaseDir    string
 	}
 }
 
