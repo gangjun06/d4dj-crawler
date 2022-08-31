@@ -16,13 +16,16 @@ Goto [vgmstream](https://vgmstream.org/downloads) and download
 
 Unzip program and locate to [project-path]/vgmstream
 
-3. Build Tools
+3. Download Asset Extractor
+Goto [gangjun06/D4DJ-asset-extractor](https://github.com/gangjun06/D4DJ-asset-extractor/releases/tag/v0.1.0) and download
+
+Unzip program and locate to [project-path]/D4DJ-assets-extractor-bin
+
+3. Build D4DJ-Tool
 
 ```bash
 cd D4DJ-Tool
 dotnet build --configuration Release -o ../D4DJ-Tool-bin
-cd ../D4DJ-assets-extractor/UnityLive2DExtractor
-dotnet build --configuration Release -o ../../D4DJ-assets-extractor-bin
 ```
 
 4. Add config.toml

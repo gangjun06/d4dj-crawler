@@ -45,8 +45,10 @@ func Parse(fileName string, data []byte, extSavePath ...string) error {
 
 	if strings.HasSuffix(savePath, "msgpack") || strings.HasPrefix(filepath.Base(savePath), "chart_") {
 		err = RunD4DJTool(savePath)
-	} else if strings.Contains(fileName, "ondemand_card_chara_transparent") || strings.Contains(fileName, "ondemand_live2d_") {
-		err = RunExtractor(savePath)
+	} else if strings.Contains(fileName, "ondemand_card_chara_transparent") {
+		err = RunExtractor(savePath, ExtractorFileBackground)
+	} else if strings.Contains(fileName, "ondemand_live2d_") {
+		err = RunExtractor(savePath, ExtractorFileLive2D)
 	} else if strings.HasSuffix(fileName, "acb") {
 		if list, err := RunVgmStream(savePath); err == nil && list != nil {
 			os.Remove(savePath)
@@ -150,9 +152,22 @@ func RunD4DJTool(filePath string) error {
 	return c.Run()
 }
 
+type ExtractorFile = uint8
+
+const (
+	ExtractorFileLive2D ExtractorFile = iota + 1
+	ExtractorFileBackground
+)
+
 // RunExtractor extract UnityAsset(live2d, character card image) to normal file
-func RunExtractor(filePath string) error {
-	c := exec.Command("dotnet", conf.Get().ExtractorPath, filePath)
+func RunExtractor(filePath string, fileType ExtractorFile) error {
+	target := ""
+	if fileType == ExtractorFileLive2D {
+		target = path.Join(path.Dir(path.Dir(filePath)), "Live2D")
+	} else if fileType == ExtractorFileBackground {
+		target = path.Join(path.Dir(path.Dir(filePath)), "images")
+	}
+	c := exec.Command(conf.Get().ExtractorPath, filePath, target)
 	c.Stderr = os.Stderr
 	return c.Run()
 }

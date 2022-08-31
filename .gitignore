@@ -43,7 +43,7 @@ D4DJ-Tool-bin
 docker_run.sh
 gitignore
 
-D4DJ-assets-extractor-bin
+D4DJ-asset-extractor-bin
 
 *.csv
 
@@ -53,3 +53,4 @@ log.txt
 vgmstream
 *.js
 assets*
+config*.toml
